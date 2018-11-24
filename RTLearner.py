@@ -6,9 +6,7 @@ def build_tree(dataX, dataY,leafSize):
         return np.array([[-1, float(np.mean(dataY)), -1, -1]])
     elif np.unique(dataY).size == 1:
         return np.array([[-1, float(dataY[0]), -1, -1]])
-    # add condition for if median = max
-    # elif np.median(dataY) == np.max(dataY):
-    #     return np.array([[-1, float(np.mean(dataY)), -1, -1]])
+
     else:
         i = np.random.randint(0, dataX.shape[1])
         Splitval=np.median(dataX[:,i])

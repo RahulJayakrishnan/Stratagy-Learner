@@ -1,12 +1,11 @@
-import LinRegLearner as lrl
-import DTLearner as dtl
+
 import RTLearner as rtl
 import numpy as np
 import pdb
 
 class BagLearner(object):
 
-    def __init__(self,learner= lrl.LinRegLearner, kwargs = {"argument1":1, "argument2":2}, bags = 20, boost = False, verbose = False):
+    def __init__(self,learner= rtl.RTLearner, kwargs = {"argument1":1, "argument2":2}, bags = 20, boost = False, verbose = False):
         self.learners=[]
         self.model=[]
         for i in range(0, bags):
