@@ -1,4 +1,5 @@
-"""MC2-P1: Market simulator.
+"""
+Template for implementing StrategyLearner  (c) 2016 Tucker Balch
 
 Copyright 2018, Georgia Institute of Technology (Georgia Tech)
 Atlanta, Georgia 30332
@@ -20,11 +21,10 @@ GT honor code violation.
 
 -----do not edit anything above this line---
 
-Student Name: Tucker Balch (replace with your name)
+Student Name: Rahul Jayakrishnan (replace with your name)
 GT User ID: rjayakrishnan3 (replace with your User ID)
-GT ID: 903281837 (replace with your GT ID)
-"""
-
+GT ID: 903281837 (replace with your GTID)
+"""  		
 import pandas as pd
 import numpy as np
 import datetime as dt

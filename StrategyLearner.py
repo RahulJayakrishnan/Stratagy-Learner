@@ -56,7 +56,7 @@ class StrategyLearner(object):
         prices_all = ut.get_data(syms, dates)  # automatically adds SPY  		   	  			    		  		  		    	 		 		   		 		  
         prices = prices_all[syms]  # only portfolio symbols  		   	  			    		  		  		    	 		 		   		 		  
         if self.verbose: print prices
-        self.learner = bl.BagLearner(learner=rtl.RTLearner, kwargs={"leaf_size": 5, "verbose": False}, bags=10, boost=False,
+        self.learner = bl.BagLearner(learner=rtl.RTLearner, kwargs={"leaf_size": 5, "verbose": False}, bags=12, boost=False,
                                 verbose=False)
         psma, bbp, trix= ind.indicators(sd,ed,syms,14)
         DataX=np.hstack([np.array(psma),np.array(bbp),np.array(trix)])
@@ -83,7 +83,6 @@ class StrategyLearner(object):
         syms=[symbol]
         dates = pd.date_range(sd, ed)  		   	  			    		  		  		    	 		 		   		 		  
         prices_all = ut.get_data([symbol], dates)  # automatically adds SPY
-        price=prices_all[syms]
         trades = prices_all[[symbol,]].copy()  # only portfolio symbols
         trades.values[:,:] = 0 # set them all to nothing
         psma, bbp, trix = ind.indicators(sd, ed, syms, 14)
@@ -95,8 +94,8 @@ class StrategyLearner(object):
                 NANS += 1
         predict=self.learner.query(DataX[NANS:,:])
         holdings=0
-        longth=0
-        shortth=-0
+        longth=0.02
+        shortth=-0.02
         for days in range (trades.shape[0]):
             temp=trix.ix[days][0]
             if pd.isnull(temp):
@@ -105,16 +104,16 @@ class StrategyLearner(object):
 
                 prediction=predict[days-NANS]
                 if holdings>0:
-                    if prediction<shortth:
+                    if prediction<shortth-self.impact:
                         trades.ix[days]=-2000
 
                 elif holdings<0:
-                    if prediction>longth:
+                    if prediction>longth+self.impact:
                         trades.ix[days] = 2000
                 else:
-                    if prediction<shortth:
+                    if prediction<shortth-self.impact:
                         trades.ix[days] = -1000
-                    elif prediction>longth:
+                    elif prediction>longth+self.impact:
                         trades.ix[days] = 1000
                 holdings=holdings+pd.to_numeric(trades.ix[days],downcast='float')[0]
         return trades
@@ -141,7 +140,7 @@ if __name__=="__main__":
     trades=learner.testPolicy(symbol='JPM',sd=dt.datetime(2010,1,1), \
         ed=dt.datetime(2011,12,31), \
         sv = 100000)
-    port=ms.compute_portvals(trades,['JPM'],commission=0,impact=0,start_val=100000)
+    port=ms.compute_portvals(trades,['JPM'],commission=0,impact=0.00,start_val=100000)
     stats(port)
     print "One does not simply think up a strategy"
 
