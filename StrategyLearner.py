@@ -60,12 +60,18 @@ class StrategyLearner(object):
                                 verbose=False)
         psma, bbp, trix= ind.indicators(sd,ed,syms,14)
         DataX=np.hstack([np.array(psma),np.array(bbp),np.array(trix)])
+        trixarray=np.array(trix)
+        NANS = 0
+        for i in trixarray:
+            if  np.isnan(i):
+                NANS += 1
+
         N=10
         DataY=np.array(prices)
         siftedY=np.array(prices.shift(-N))
         DataY=siftedY/DataY -1
-        finalX=DataX[40:-N,:]
-        finalY=DataY[40:-N,:]
+        finalX=DataX[NANS:-N,:]
+        finalY=DataY[NANS:-N,:]
         self.model=self.learner.addEvidence(finalX,finalY)
         return self.model
 
@@ -82,7 +88,12 @@ class StrategyLearner(object):
         trades.values[:,:] = 0 # set them all to nothing
         psma, bbp, trix = ind.indicators(sd, ed, syms, 14)
         DataX = np.hstack([np.array(psma), np.array(bbp), np.array(trix)])
-        predict=self.learner.query(DataX[40:,:])
+        trixarray=np.array(trix)
+        NANS = 0
+        for i in trixarray:
+            if np.isnan(i):
+                NANS += 1
+        predict=self.learner.query(DataX[NANS:,:])
         holdings=0
         longth=0
         shortth=-0
@@ -92,7 +103,7 @@ class StrategyLearner(object):
                 continue
             else:
 
-                prediction=predict[days-40]
+                prediction=predict[days-NANS]
                 if holdings>0:
                     if prediction<shortth:
                         trades.ix[days]=-2000
