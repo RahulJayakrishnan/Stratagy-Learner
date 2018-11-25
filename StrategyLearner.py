@@ -56,23 +56,25 @@ class StrategyLearner(object):
         prices_all = ut.get_data(syms, dates)  # automatically adds SPY  		   	  			    		  		  		    	 		 		   		 		  
         prices = prices_all[syms]  # only portfolio symbols  		   	  			    		  		  		    	 		 		   		 		  
         if self.verbose: print prices
-        self.learner = bl.BagLearner(learner=rtl.RTLearner, kwargs={"leaf_size": 5, "verbose": False}, bags=10, boost=False,
+        self.learner = bl.BagLearner(learner=rtl.RTLearner, kwargs={"leaf_size": 5, "verbose": False}, bags=12, boost=False,
                                 verbose=False)
         psma, bbp, trix= ind.indicators(sd,ed,syms,14)
         DataX=np.hstack([np.array(psma),np.array(bbp),np.array(trix)])
+        trixarray=np.array(trix)
+        NANS = 0
+        for i in trixarray:
+            if  np.isnan(i):
+                NANS += 1
+
+        N=10
         DataY=np.array(prices)
-        self.model=self.learner.addEvidence(DataX[40:,:],DataY[40:,:])
+        siftedY=np.array(prices.shift(-N))
+        DataY=siftedY/DataY -1
+        finalX=DataX[NANS:-N,:]
+        finalY=DataY[NANS:-N,:]
+        self.model=self.learner.addEvidence(finalX,finalY)
         return self.model
 
-
-  		   	  			    		  		  		    	 		 		   		 		  
-        # # example use with new colname
-        # volume_all = ut.get_data(syms, dates, colname = "Volume")  # automatically adds SPY
-        # volume = volume_all[syms]  # only portfolio symbols
-        # volume_SPY = volume_all['SPY']  # only SPY, for comparison later
-        # if self.verbose: print volume
-  		   	  			    		  		  		    	 		 		   		 		  
-    # this method should use the existing policy and test it against new data  		   	  			    		  		  		    	 		 		   		 		  
     def testPolicy(self, symbol = "JPM", \
         sd=dt.datetime(2009,1,1), \
         ed=dt.datetime(2010,1,1), \
@@ -81,33 +83,37 @@ class StrategyLearner(object):
         syms=[symbol]
         dates = pd.date_range(sd, ed)  		   	  			    		  		  		    	 		 		   		 		  
         prices_all = ut.get_data([symbol], dates)  # automatically adds SPY
-        price=prices_all[syms]
         trades = prices_all[[symbol,]].copy()  # only portfolio symbols
         trades.values[:,:] = 0 # set them all to nothing
         psma, bbp, trix = ind.indicators(sd, ed, syms, 14)
         DataX = np.hstack([np.array(psma), np.array(bbp), np.array(trix)])
-        predict=self.learner.query(DataX[40:,:])
+        trixarray=np.array(trix)
+        NANS = 0
+        for i in trixarray:
+            if np.isnan(i):
+                NANS += 1
+        predict=self.learner.query(DataX[NANS:,:])
         holdings=0
-        N=1
-        for days in range (trades.shape[0]-N):
+        longth=0.02
+        shortth=-0.02
+        for days in range (trades.shape[0]):
             temp=trix.ix[days][0]
             if pd.isnull(temp):
                 continue
             else:
 
-                prediction=predict[days-40+N]
-                current_price=pd.to_numeric(price.ix[days],downcast='float')[0]
+                prediction=predict[days-NANS]
                 if holdings>0:
-                    if current_price>prediction:
+                    if prediction<shortth-self.impact:
                         trades.ix[days]=-2000
 
                 elif holdings<0:
-                    if current_price<prediction:
+                    if prediction>longth+self.impact:
                         trades.ix[days] = 2000
                 else:
-                    if current_price > prediction:
+                    if prediction<shortth-self.impact:
                         trades.ix[days] = -1000
-                    elif current_price<prediction:
+                    elif prediction>longth+self.impact:
                         trades.ix[days] = 1000
                 holdings=holdings+pd.to_numeric(trades.ix[days],downcast='float')[0]
         return trades
@@ -125,15 +131,16 @@ def stats(port_val):
         print "Standard Deviation of Daily Return:", sddr
         print "Sharp Ratio:", sr
         return cr,sr,adr,sddr
+
 if __name__=="__main__":
     learner= StrategyLearner(verbose=False,impact=0)
     learner.addEvidence(symbol='JPM',sd=dt.datetime(2008,1,1), \
         ed=dt.datetime(2009,12,31), \
         sv = 100000)
-    trades=learner.testPolicy(symbol='JPM',sd=dt.datetime(2008,1,1), \
-        ed=dt.datetime(2009,12,31), \
+    trades=learner.testPolicy(symbol='JPM',sd=dt.datetime(2010,1,1), \
+        ed=dt.datetime(2011,12,31), \
         sv = 100000)
-    port=ms.compute_portvals(trades,['JPM'],commission=0,impact=0,start_val=100000)
+    port=ms.compute_portvals(trades,['JPM'],commission=0,impact=0.00,start_val=100000)
     stats(port)
     print "One does not simply think up a strategy"
 
