@@ -56,7 +56,7 @@ class StrategyLearner(object):
         prices_all = ut.get_data(syms, dates)  # automatically adds SPY  		   	  			    		  		  		    	 		 		   		 		  
         prices = prices_all[syms]  # only portfolio symbols  		   	  			    		  		  		    	 		 		   		 		  
         if self.verbose: print prices
-        self.learner = bl.BagLearner(learner=rtl.RTLearner, kwargs={"leaf_size": 5, "verbose": False}, bags=20, boost=False,
+        self.learner = bl.BagLearner(learner=rtl.RTLearner, kwargs={"leaf_size": 5, "verbose": False}, bags=10, boost=False,
                                 verbose=False)
         psma, bbp, trix= ind.indicators(sd,ed,syms,14)
         DataX=np.hstack([np.array(psma),np.array(bbp),np.array(trix)])
@@ -77,27 +77,25 @@ class StrategyLearner(object):
         sd=dt.datetime(2009,1,1), \
         ed=dt.datetime(2010,1,1), \
         sv = 10000):  		   	  			    		  		  		    	 		 		   		 		  
-  		   	  			    		  		  		    	 		 		   		 		  
-        # here we build a fake set of trades  		   	  			    		  		  		    	 		 		   		 		  
-        # your code should return the same sort of data
+
         syms=[symbol]
         dates = pd.date_range(sd, ed)  		   	  			    		  		  		    	 		 		   		 		  
         prices_all = ut.get_data([symbol], dates)  # automatically adds SPY
         price=prices_all[syms]
-        trades = prices_all[[symbol,]]  # only portfolio symbols
+        trades = prices_all[[symbol,]].copy()  # only portfolio symbols
         trades.values[:,:] = 0 # set them all to nothing
         psma, bbp, trix = ind.indicators(sd, ed, syms, 14)
         DataX = np.hstack([np.array(psma), np.array(bbp), np.array(trix)])
         predict=self.learner.query(DataX[40:,:])
         holdings=0
-        for days in range (trades.shape[0]-1):
-            temp=trix.ix[days]
-            temp=pd.to_numeric(temp,downcast='float')[0]
+        N=1
+        for days in range (trades.shape[0]-N):
+            temp=trix.ix[days][0]
             if pd.isnull(temp):
                 continue
             else:
 
-                prediction=predict[days-40+1]
+                prediction=predict[days-40+N]
                 current_price=pd.to_numeric(price.ix[days],downcast='float')[0]
                 if holdings>0:
                     if current_price>prediction:
