@@ -21,14 +21,15 @@ GT honor code violation.
 
 -----do not edit anything above this line---
 
-Student Name: Rahul Jayakrishnan (replace with your name)
-GT User ID: rjayakrishnan3 (replace with your User ID)
-GT ID: 903281837 (replace with your GTID)
+Student Name: Rahul Jayakrishnan
+GT User ID: rjayakrishnan3
+GT ID: 903281837
 """
 import numpy as np
 import pdb
 
 def build_tree(dataX, dataY,leafSize):
+    
     if dataX.shape[0] <= leafSize:
         return np.array([[-1, float(np.mean(dataY)), -1, -1]])
     elif np.unique(dataY).size == 1:

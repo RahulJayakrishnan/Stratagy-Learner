@@ -21,9 +21,9 @@ GT honor code violation.
 
 -----do not edit anything above this line---
 
-Student Name: Rahul Jayakrishnan (replace with your name)
-GT User ID: rjayakrishnan3 (replace with your User ID)
-GT ID: 903281837 (replace with your GTID)
+Student Name: Rahul Jayakrishnan
+GT User ID: rjayakrishnan3
+GT ID: 903281837
 """
 import marketsimcode as ms
 import indicators as ind
@@ -77,11 +77,11 @@ def test_code():
     long=prices.copy()
     ben=bench(sd=start_date, ed=end_date, \
           syms=symbols)
-    ret= ms.compute_portvals(ben,symbols,start_val=100000,commission=0,impact=0.005)
+    ret= ms.compute_portvals(ben,symbols,start_val=100000,commission=0,impact=0.01)
     benchmark=ret/ret.ix[0,:]
     print "Stats-benchmark"
     stats(ret)
-    learner = stl.StrategyLearner(verbose=False, impact=0.005)
+    learner = stl.StrategyLearner(verbose=False, impact=0.01)
     learner.addEvidence(symbol=symbols[0], sd=start_date, \
                         ed=end_date, \
                         sv=100000)
@@ -118,7 +118,7 @@ def test_code():
         elif long.at[index,'JPM']==-1:
             plt.axvline(x=index.date(), color="red",linewidth=0.7)
 
-    plt.title("Benchmark vs Stratagy Learner [IN SAMPLE]")
+    plt.title("Benchmark vs Stratagy Learner [IN SAMPLE] IMPACT=0.01")
     plt.legend(loc="best")
     plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m/%d/%Y'))
     #plt.xticks(np.arange(start_date,end_date,step=30,dtype='datetime64[D]'),rotation='vertical')

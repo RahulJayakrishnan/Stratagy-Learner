@@ -21,9 +21,9 @@ GT honor code violation.
 
 -----do not edit anything above this line---
 
-Student Name: Rahul Jayakrishnan (replace with your name)
-GT User ID: rjayakrishnan3 (replace with your User ID)
-GT ID: 903281837 (replace with your GTID)
+Student Name: Rahul Jayakrishnan
+GT User ID: rjayakrishnan3
+GT ID: 903281837
 """
 import pandas as pd  		   	  			    		  		  		    	 		 		   		 		  
 import matplotlib

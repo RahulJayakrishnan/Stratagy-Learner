@@ -21,9 +21,9 @@ GT honor code violation.
 
 -----do not edit anything above this line---
 
-Student Name: Rahul Jayakrishnan (replace with your name)
-GT User ID: rjayakrishnan3 (replace with your User ID)
-GT ID: 903281837 (replace with your GTID)
+Student Name: Rahul Jayakrishnan
+GT User ID: rjayakrishnan3
+GT ID: 903281837
 """
 import marketsimcode as ms
 import indicators as ind
@@ -38,6 +38,7 @@ from scipy.ndimage.interpolation import shift
 import scipy.optimize as spo
 import matplotlib.dates as mdates
 import StrategyLearner as stl
+import ManualStratagy as manual
 
 
 def stats(port_val):
@@ -103,7 +104,12 @@ def test_code():
             count += 1
             long.ix[day][0]=-1
     print "total trades:",count
+    optimal, long = manual.testPolicy('JPM', start_date, end_date, sv=100000)
+    ret1 = ms.compute_portvals(optimal, symbols, start_val=100000, commission=0, impact=0)
+    man = ret1 / ret1.ix[0, :]
 
+    print "Stats-Manual Stratagy"
+    stats(ret1)
 
     fig = plt.figure(figsize=(15, 10))
     ax = fig.add_subplot(111)
@@ -111,19 +117,20 @@ def test_code():
     plt.ylabel("Normalised Portfolio value")
     ax.plot(benchmark, 'b', label="Benchmark",linewidth=0.7)
     ax.plot(port, 'k', label="Stratagy Learner",linewidth=0.7)
+    ax.plot(man, 'r', label="Manual Stratagy", linewidth=0.7)
 
-    for index, row in prices.iterrows():
-        if long.at[index,'JPM']==1:
-            plt.axvline(x=index.date(),color="green",linewidth=0.7)
-        elif long.at[index,'JPM']==-1:
-            plt.axvline(x=index.date(), color="red",linewidth=0.7)
+    # for index, row in prices.iterrows():
+    #     if long.at[index,'JPM']==1:
+    #         plt.axvline(x=index.date(),color="green",linewidth=0.7)
+    #     elif long.at[index,'JPM']==-1:
+    #         plt.axvline(x=index.date(), color="red",linewidth=0.7)
 
-    plt.title("Benchmark vs Stratagy Learner [IN SAMPLE]")
+    plt.title("Manual Stratagy vs Stratagy Learner [IN SAMPLE]")
     plt.legend(loc="best")
     plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m/%d/%Y'))
     #plt.xticks(np.arange(start_date,end_date,step=30,dtype='datetime64[D]'),rotation='vertical')
     plt.grid(True)
-    plt.savefig("BenchVsLearner.png")
+    plt.savefig("ManVsLearner.png")
     plt.close()
 
 if __name__=="__main__":

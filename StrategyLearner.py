@@ -1,5 +1,5 @@
 """  		   	  			    		  		  		    	 		 		   		 		  
-Template for implementing StrategyLearner  (c) 2016 Tucker Balch  		   	  			    		  		  		    	 		 		   		 		  
+Template for implementing StrategyLearner  (c) 2016 Tucker Balch
   		   	  			    		  		  		    	 		 		   		 		  
 Copyright 2018, Georgia Institute of Technology (Georgia Tech)  		   	  			    		  		  		    	 		 		   		 		  
 Atlanta, Georgia 30332  		   	  			    		  		  		    	 		 		   		 		  
@@ -21,9 +21,9 @@ GT honor code violation.
   		   	  			    		  		  		    	 		 		   		 		  
 -----do not edit anything above this line---  		   	  			    		  		  		    	 		 		   		 		  
   		   	  			    		  		  		    	 		 		   		 		  
-Student Name: Rahul Jayakrishnan (replace with your name)
-GT User ID: rjayakrishnan3 (replace with your User ID)  		   	  			    		  		  		    	 		 		   		 		  
-GT ID: 903281837 (replace with your GTID)
+Student Name: Rahul Jayakrishnan
+GT User ID: rjayakrishnan3
+GT ID: 903281837
 """  		   	  			    		  		  		    	 		 		   		 		  
   		   	  			    		  		  		    	 		 		   		 		  
 import datetime as dt  		   	  			    		  		  		    	 		 		   		 		  
